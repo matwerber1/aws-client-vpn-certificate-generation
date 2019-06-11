@@ -21,8 +21,7 @@ There are other differences between Client VPN and VGW, as well. You should refe
 
 ## Use Cases
 
-While AWS Site-to-site VPN is (typically) used for connecting on-premises networks to AWS, AWS Client VPN is for connecting specific devices to your VPC. The Client VPN is an excellent way to give a user or device private access to resources deployed in your VPC, such as EC2, RDS, Redshift. You can also use this method to privately access AWS-managed services that support [AWS VPC Endpoints](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints.html), such as DynamoDB or CodeCommit.
-
+While AWS Site-to-site VPN is (typically) used for connecting on-premises networks to your AWS VPC, AWS Client VPN is instead used for connecting specific devices to your VPC. 
 
 ## Deployment
 
