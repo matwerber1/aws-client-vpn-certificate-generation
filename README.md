@@ -8,7 +8,7 @@ AWS Client VPN supports either certificate-based mutual authentication or Active
 
 ## Why?
 
-This project was adapted from the AWS documentation because (at the time of this writing) the AWS examples for certificate generation had subtle errors that caused things to fail (perhaps this is fixed now? As I write this README, it's been a couple of months since Client VPN's release).
+This project was adapted from the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/authentication-authrization.html#mutual) because (at the time of this writing) the AWS examples for certificate generation had subtle errors that caused things to fail. I spent a lot of time trying to troubleshoot and wanted to share my learnings. Perhaps this is fixed now? As I write this README, it's been a couple of months since Client VPN's release.
 
 ## AWS Client VPN vs. AWS Site-to-Site VPN (formerly "VPN Gateway")
 
@@ -53,3 +53,7 @@ The **deploy.sh** script will use [EasyRSA](https://github.com/OpenVPN/easy-rsa)
     ```sh
     $ ./deploy.sh
     ```
+
+4. **SAVE** the files created locally. At a minimum, you will need the client files when later setting up your OpenVPN client.
+
+5. Afterwards, you should be able to continue at [**Step 2: Create a Client VPN Endpoint** in the AWS Documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-getting-started.html#cvpn-getting-started-endpoint). 
