@@ -8,7 +8,24 @@ AWS Client VPN supports either certificate-based mutual authentication or Active
 
 ## Why?
 
-This project was adapted from the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/authentication-authrization.html#mutual) because (at the time of this writing) the AWS examples for certificate generation had subtle errors that caused things to fail. I spent a lot of time trying to troubleshoot and wanted to share my learnings. Perhaps this is fixed now? As I write this README, it's been a couple of months since Client VPN's release.
+This project was adapted from the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/authentication-authrization.html#mutual) because (at the time of this writing) the AWS examples for certificate generation specified an example domain that wasn't fully qualified which allowed the certs to be imported to Amazon Certificate Manager (ACM) but not usable by AWS Client VPN. 
+
+The AWS docs have since been fixed on March 3 2019 [in this commit](https://github.com/awsdocs/aws-client-vpn-administrator-guide/commit/9e6faef841ab46c8d42a68922a70160abf134912).
+
+Specifically, the old docs showed the line below, which would create a client certificate with a domain of "client1". This would be accepted by ACN but not usable:
+
+```
+# This is accepted by ACN but won't work with AWS Client VPN; "client1" needs to be a FQDN:
+$ ./easyrsa build-client-full client1 nopass
+```
+
+The docs now show the line below, where the expectation is that you would preprend "client" (or "client1", "client2", etc.) do your domain name (e.g example.com) for a fully-qualified name such as client1.vpn.example.com. The idea is that your server cert would be similar, such as "server.vpn.example.com":
+
+```
+# This works, its a FQDN
+$ ./easyrsa build-client-full client1.domain.tld nopass
+```
+
 
 ## AWS Client VPN vs. AWS Site-to-Site VPN (formerly "VPN Gateway")
 
