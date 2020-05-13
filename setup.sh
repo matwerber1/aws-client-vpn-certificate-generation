@@ -6,6 +6,7 @@
 DOMAIN=vpn.example.com
 SERVER_DOMAIN=server.$DOMAIN
 CLIENT_DOMAIN=client.$DOMAIN
+REGION=us-west-2
 
 # Current directory from which script is run...
 CUR_DIR=$PWD
@@ -32,5 +33,11 @@ cp $CUR_DIR/easy-rsa/easyrsa3/pki/private/$CLIENT_DOMAIN.key $CERT_DIR
 
 cd $CERT_DIR
 
-aws acm import-certificate --certificate file://$SERVER_DOMAIN.crt  --private-key file://$SERVER_DOMAIN.key  --certificate-chain file://ca.crt --region us-east-1
-aws acm import-certificate --certificate file://$CLIENT_DOMAIN.crt --private-key file://$CLIENT_DOMAIN.key --certificate-chain file://ca.crt --region us-east-1
+### Use these commands if you are using AWS CLI version 1
+aws acm import-certificate --certificate file://$SERVER_DOMAIN.crt  --private-key file://$SERVER_DOMAIN.key  --certificate-chain file://ca.crt --region $REGION
+aws acm import-certificate --certificate file://$CLIENT_DOMAIN.crt --private-key file://$CLIENT_DOMAIN.key --certificate-chain file://ca.crt --region $REGION
+
+### Use these commands if you are using AWS CLI version 2
+# read more about this here: https://github.com/aws/aws-cli/issues/4978
+#aws acm import-certificate --certificate fileb://$SERVER_DOMAIN.crt  --private-key fileb://$SERVER_DOMAIN.key  --certificate-chain fileb://ca.crt --region $REGION
+#aws acm import-certificate --certificate fileb://$CLIENT_DOMAIN.crt --private-key fileb://$CLIENT_DOMAIN.key --certificate-chain fileb://ca.crt --region $REGION
