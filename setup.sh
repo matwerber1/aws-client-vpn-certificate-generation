@@ -1,13 +1,27 @@
 #!/bin/bash
 
+set -e
+
 # Adapted from https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/authentication-authrization.html#mutual
 
-# Must use FQDN when running the "easyrsa build-..."" commands; otherwise, the certs will import to AWS ACM but will not appear as usable
-DOMAIN=vpn.example.com
+# CONFIGURATION
+#------------------------------------------------------------------------------------------------------------------
+# Must use a FQDN for the values below, e.g. "example.com". Otherwise, the certs will 
+# import to AWS ACM but will not appear as usable:
+DOMAIN=example.com
 SERVER_DOMAIN=server.$DOMAIN
 CLIENT_DOMAIN=client.$DOMAIN
 REGION=us-west-2
 
+# Set this to whatever CLI version you are using, as the ACM import uses different commands depending on version. 
+# Find your version using "aws --version":
+CLI_VERSION=2
+
+# If you have multiple CLI profiles, set the profile you want to use below. Otherwise, leave as empty string "":
+PROFILE="--profile ctt-shared-services"
+
+
+#------------------------------------------------------------------------------------------------------------------
 # Current directory from which script is run...
 CUR_DIR=$PWD
 
@@ -33,11 +47,34 @@ cp $CUR_DIR/easy-rsa/easyrsa3/pki/private/$CLIENT_DOMAIN.key $CERT_DIR
 
 cd $CERT_DIR
 
-### Use these commands if you are using AWS CLI version 1
-aws acm import-certificate --certificate file://$SERVER_DOMAIN.crt  --private-key file://$SERVER_DOMAIN.key  --certificate-chain file://ca.crt --region $REGION
-aws acm import-certificate --certificate file://$CLIENT_DOMAIN.crt --private-key file://$CLIENT_DOMAIN.key --certificate-chain file://ca.crt --region $REGION
+# Command to import certificate to AWS ACM varies slightly, depending on CLI version:
+if [ $CLI_VERSION = 1 ]; then
+  aws acm import-certificate \
+    --certificate file://$SERVER_DOMAIN.crt  \
+    --private-key file://$SERVER_DOMAIN.key  \
+    --certificate-chain file://ca.crt \
+    --region $REGION \
+    $PROFILE
 
-### Use these commands if you are using AWS CLI version 2
-# read more about this here: https://github.com/aws/aws-cli/issues/4978
-#aws acm import-certificate --certificate fileb://$SERVER_DOMAIN.crt  --private-key fileb://$SERVER_DOMAIN.key  --certificate-chain fileb://ca.crt --region $REGION
-#aws acm import-certificate --certificate fileb://$CLIENT_DOMAIN.crt --private-key fileb://$CLIENT_DOMAIN.key --certificate-chain fileb://ca.crt --region $REGION
+  aws acm import-certificate \
+    --certificate file://$CLIENT_DOMAIN.crt \
+    --private-key file://$CLIENT_DOMAIN.key \
+    --certificate-chain file://ca.crt \
+    --region $REGION \
+    $PROFILE
+
+else
+  aws acm import-certificate \
+    --certificate fileb://$SERVER_DOMAIN.crt  \
+    --private-key fileb://$SERVER_DOMAIN.key  \
+    --certificate-chain fileb://ca.crt \
+    --region $REGION \
+    $PROFILE
+
+  aws acm import-certificate \
+    --certificate fileb://$CLIENT_DOMAIN.crt \
+    --private-key fileb://$CLIENT_DOMAIN.key \
+    --certificate-chain fileb://ca.crt \
+    --region $REGION \
+    $PROFILE
+fi
